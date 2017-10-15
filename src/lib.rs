@@ -185,7 +185,7 @@ impl Queue {
         Ok(())
     }
 
-    pub fn send(self, msg: Message) -> Result<(), Error> {
+    pub fn send(&self, msg: Message) -> Result<(), Error> {
         if msg.data.len() > self.max_size as usize {
             return Err(Error::MessageSizeExceeded());
         }
@@ -197,7 +197,7 @@ impl Queue {
         ).map_err(|e| e.into())
     }
 
-    pub fn receive(self) -> Result<Message, Error> {
+    pub fn receive(&self) -> Result<Message, Error> {
         let mut data: Vec<u8> = vec![0; self.max_size as usize];
         let mut priority: u32 = 0;
 
