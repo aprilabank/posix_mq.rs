@@ -1,6 +1,8 @@
 use nix;
 use std::error;
 use std::fmt;
+use std::io;
+use std::num;
 
 /// This module implements a simple error type to match the errors that can be thrown from the C
 /// functions as well as some extra errors resulting from internal validations.
@@ -19,6 +21,13 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum Error {
+    // These errors are raised inside of the library
+    InvalidQueueName(&'static str),
+    ValueReadingError(io::Error),
+    MessageSizeExceeded(),
+    MaximumMessageSizeExceeded(),
+    MaximumMessageCountExceeded(),
+
     // These errors match what is described in the man pages (from mq_overview(7) onwards).
     PermissionDenied(),
     InvalidQueueDescriptor(),
@@ -45,6 +54,12 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         use Error::*;
         match *self {
+            // This error contains more sensible description strings already
+            InvalidQueueName(e) => e,
+            ValueReadingError(_) => "error reading system configuration for message queues",
+            MessageSizeExceeded() => "message is larger than maximum size for specified queue",
+            MaximumMessageSizeExceeded() => "specified queue message size exceeds system maximum",
+            MaximumMessageCountExceeded() => "specified queue message count exceeds system maximum",
             PermissionDenied() => "permission to the specified queue was denied",
             InvalidQueueDescriptor() => "the internal queue descriptor was invalid",
             QueueCallInterrupted() => "queue method interrupted by signal",
@@ -52,8 +67,10 @@ impl error::Error for Error {
             QueueNotFound() => "the specified queue could not be found",
             InsufficientMemory() => "insufficient memory to call queue method",
             InsufficientSpace() => "insufficient space to call queue method",
-            ProcessFileDescriptorLimitReached() => "max. number of process file descriptors reached",
-            SystemFileDescriptorLimitReached() => "max. number of system file descriptors reached",
+            ProcessFileDescriptorLimitReached() =>
+                "maximum number of process file descriptors reached",
+            SystemFileDescriptorLimitReached() =>
+                "maximum number of system file descriptors reached",
             UnknownForeignError(_) => "unknown foreign error occured: please report a bug!",
             UnknownInternalError(_) => "unknown internal error occured: please report a bug!",
         }
@@ -78,6 +95,22 @@ impl From<nix::Error> for Error {
         }
     }
 }
+
+// This implementation is used when reading system queue settings.
+impl From<io::Error> for Error {
+    fn from(e: io::Error) -> Self {
+        Error::ValueReadingError(e)
+    }
+}
+
+// This implementation is used when parsing system queue settings. The unknown error is returned
+// here because the system is probably seriously broken if those files don't contain numbers.
+impl From<num::ParseIntError> for Error {
+    fn from(_: num::ParseIntError) -> Self {
+        Error::UnknownInternalError(None)
+    }
+}
+
 
 fn match_errno(err: nix::Errno) -> Error {
     use nix::errno::*;
