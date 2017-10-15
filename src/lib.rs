@@ -56,7 +56,7 @@ impl Name {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct Message {
     pub data: Vec<u8>,
     pub priority: u32,
