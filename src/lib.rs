@@ -181,6 +181,7 @@ impl Queue {
     /// other processes, too!
     pub fn delete(self) -> Result<(), Error> {
         mqueue::mq_unlink(&self.name.0)?;
+        drop(self);
         Ok(())
     }
 
