@@ -185,7 +185,7 @@ impl Queue {
         Ok(())
     }
 
-    pub fn send(&self, msg: Message) -> Result<(), Error> {
+    pub fn send(&self, msg: &Message) -> Result<(), Error> {
         if msg.data.len() > self.max_size as usize {
             return Err(Error::MessageSizeExceeded());
         }
@@ -245,7 +245,7 @@ fn read_i64_from_file(name: &str) -> Result<i64, Error> {
     let mut file = File::open(name.to_string())?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
-    Ok(content.parse()?)
+    Ok(content.trim().parse()?)
 }
 
 /// The mq_getattr implementation in the nix crate hides the maximum message size and count, which
