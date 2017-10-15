@@ -1,14 +1,14 @@
 extern crate nix;
 extern crate libc;
 
+use error::Error;
+use libc::mqd_t;
 use nix::mqueue;
 use nix::sys::stat;
 use std::ffi::CString;
-use libc::mqd_t;
-use error::Error;
-use std::string::ToString;
 use std::fs::File;
 use std::io::Read;
+use std::string::ToString;
 
 mod error;
 
@@ -32,7 +32,7 @@ impl Name {
         let string = s.to_string();
 
         if !string.starts_with('/') {
-            return Err(Error::InvalidQueueName("Queue name must not start with '/'"))
+            return Err(Error::InvalidQueueName("Queue name must not start with '/'"));
         }
 
         // The C library has a special error return for this case, so I assume people must actually
@@ -40,15 +40,15 @@ impl Name {
         if string.len() == 1 {
             return Err(Error::InvalidQueueName(
                 "Queue name must be a slash followed by one or more characters"
-            ))
+            ));
         }
 
         if string.len() > 255 {
-            return Err(Error::InvalidQueueName("Queue name must not exceed 255 characters"))
+            return Err(Error::InvalidQueueName("Queue name must not exceed 255 characters"));
         }
 
         if string.matches('/').count() > 1 {
-            return Err(Error::InvalidQueueName("Queue name can not contain more than one slash"))
+            return Err(Error::InvalidQueueName("Queue name can not contain more than one slash"));
         }
 
         // TODO: What error is being thrown away here? Is it possible?
@@ -84,11 +84,11 @@ impl Queue {
     /// Linux users can change this setting themselves by modifying the queue file in /dev/mqueue.
     pub fn create(name: Name, max_pending: i64, max_size: i64) -> Result<Queue, Error> {
         if max_pending > read_i64_from_file(MSG_MAX)? {
-            return Err(Error::MaximumMessageCountExceeded())
+            return Err(Error::MaximumMessageCountExceeded());
         }
 
         if max_size > read_i64_from_file(MSGSIZE_MAX)? {
-            return Err(Error::MaximumMessageSizeExceeded())
+            return Err(Error::MaximumMessageSizeExceeded());
         }
 
         let oflags = {
@@ -135,7 +135,7 @@ impl Queue {
 
         let attr = mq_getattr(queue_descriptor)?;
 
-        Ok(Queue{
+        Ok(Queue {
             name,
             queue_descriptor,
             max_pending: attr.mq_maxmsg,
@@ -186,7 +186,7 @@ impl Queue {
 
     pub fn send(self, msg: Message) -> Result<(), Error> {
         if msg.data.len() > self.max_size as usize {
-            return Err(Error::MessageSizeExceeded())
+            return Err(Error::MessageSizeExceeded());
         }
 
         mqueue::mq_send(
