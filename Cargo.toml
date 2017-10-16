@@ -2,6 +2,9 @@
 name = "posix_mq"
 version = "0.1.0"
 authors = ["Vincent Ambo <tazjin@gmail.com>"]
+description = "(Higher-level) Rust bindings to POSIX message queues"
+license = "MIT"
+repository = "https://github.com/aprilabank/posix_mq.rs"
 
 [dependencies]
 nix = "0.9"
