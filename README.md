@@ -7,6 +7,8 @@ posix_mq
 This is a simple, relatively high-level library for the POSIX [message queue API][]. It wraps the lower-level API in a
 simpler interface with more robust error handling.
 
+Check out this project's [sister library][] in Kotlin.
+
 Usage example:
 
 ```rust
@@ -28,3 +30,4 @@ let result = queue.receive().expect("message receiving failed");
 ```
 
 [message queue API]: https://linux.die.net/man/7/mq_overview
+[sister library]: https://github.com/aprilabank/posix_mq.kt
