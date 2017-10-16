@@ -9,6 +9,7 @@ use std::ffi::CString;
 use std::fs::File;
 use std::io::Read;
 use std::string::ToString;
+use std::ops::Drop;
 
 mod error;
 
@@ -217,6 +218,15 @@ impl Queue {
 
     pub fn max_size(&self) -> usize {
         self.max_size
+    }
+}
+
+impl Drop for Queue {
+    fn drop(&mut self) {
+        // Attempt to close the queue descriptor and discard any possible errors.
+        // The only error thrown in the C-code is EINVAL, which would mean that the
+        // descriptor has already been closed.
+        mqueue::mq_close(self.queue_descriptor).ok();
     }
 }
 
