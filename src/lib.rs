@@ -33,7 +33,7 @@ impl Name {
         let string = s.to_string();
 
         if !string.starts_with('/') {
-            return Err(Error::InvalidQueueName("Queue name must not start with '/'"));
+            return Err(Error::InvalidQueueName("Queue name must start with '/'"));
         }
 
         // The C library has a special error return for this case, so I assume people must actually
