@@ -26,6 +26,7 @@ TODO:
 
 /// Wrapper type for queue names that performs basic validation of queue names before calling
 /// out to C code.
+#[derive(Debug)]
 pub struct Name(CString);
 
 impl Name {
@@ -65,6 +66,7 @@ pub struct Message {
 
 /// Represents an open queue descriptor to a POSIX message queue. This carries information
 /// about the queue's limitations (i.e. maximum message size and maximum message count).
+#[derive(Debug)]
 pub struct Queue {
     name: Name,
 
