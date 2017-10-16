@@ -1,6 +1,9 @@
 posix_mq
 ========
 
+[![Build Status](https://travis-ci.org/aprilabank/posix_mq.rs.svg?branch=master)](https://travis-ci.org/aprilabank/posix_mq.rs)
+[![crates.io](https://img.shields.io/crates/v/posix_mq.svg)](https://crates.io/crates/posix_mq)
+
 This is a simple, relatively high-level library for the POSIX [message queue API][]. It wraps the lower-level API in a
 simpler interface with more robust error handling.
 
