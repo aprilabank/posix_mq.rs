@@ -181,31 +181,35 @@ impl Queue {
     }
 
     /// Delete a message queue from the system. This method will make the queue unavailable for
-    /// other processes, too!
+    /// other processes after their current queue descriptors have been closed.
     pub fn delete(self) -> Result<(), Error> {
         mqueue::mq_unlink(&self.name.0)?;
         drop(self);
         Ok(())
     }
 
+    /// Send a message to the message queue.
+    /// If the queue is full this call will block until a message has been consumed.
     pub fn send(&self, msg: &Message) -> Result<(), Error> {
         if msg.data.len() > self.max_size as usize {
             return Err(Error::MessageSizeExceeded());
         }
 
         mqueue::mq_send(
-            self.queue_descriptor.clone(),
+            self.queue_descriptor,
             msg.data.as_ref(),
             msg.priority,
         ).map_err(|e| e.into())
     }
 
+    /// Receive a message from the message queue.
+    /// If the queue is empty this call will block until a message arrives.
     pub fn receive(&self) -> Result<Message, Error> {
         let mut data: Vec<u8> = vec![0; self.max_size as usize];
         let mut priority: u32 = 0;
 
         let msg_size = mqueue::mq_receive(
-            self.queue_descriptor.clone(),
+            self.queue_descriptor,
             data.as_mut(),
             &mut priority,
         )?;
