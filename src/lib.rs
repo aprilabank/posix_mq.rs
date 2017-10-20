@@ -11,7 +11,7 @@ use std::io::Read;
 use std::string::ToString;
 use std::ops::Drop;
 
-mod error;
+pub mod error;
 
 #[cfg(test)]
 mod tests;
