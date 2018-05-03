@@ -1,7 +1,7 @@
 [package]
 name = "posix_mq"
-version = "0.1.2"
-authors = ["Vincent Ambo <tazjin@gmail.com>"]
+version = "0.1.3"
+authors = ["Vincent Ambo <vincent@aprila.no>"]
 description = "(Higher-level) Rust bindings to POSIX message queues"
 license = "MIT"
 repository = "https://github.com/aprilabank/posix_mq.rs"

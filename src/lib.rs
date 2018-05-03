@@ -26,7 +26,7 @@ TODO:
 
 /// Wrapper type for queue names that performs basic validation of queue names before calling
 /// out to C code.
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Name(CString);
 
 impl Name {
@@ -58,7 +58,7 @@ impl Name {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Message {
     pub data: Vec<u8>,
     pub priority: u32,
